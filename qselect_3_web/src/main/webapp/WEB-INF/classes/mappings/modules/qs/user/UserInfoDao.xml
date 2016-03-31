@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innovate.cms.modules.qs.dao.user.UserInfoDao">
+    
+	<sql id="userInfoColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.history_pageno AS "historyPageNo"
+	</sql>
+	
+	<sql id="userInfoJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="UserInfo">
+		SELECT 
+			<include refid="userInfoColumns"/>
+		FROM user_info a
+		<include refid="userInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="UserInfo">
+		SELECT 
+			<include refid="userInfoColumns"/>
+		FROM user_info a
+		<where>
+			
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="UserInfo">
+		SELECT 
+			<include refid="userInfoColumns"/>
+		FROM user_info a
+		<include refid="userInfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO user_info(
+			id,
+			user_id,
+			history_pageno
+		) VALUES (
+			#{id},
+			#{userId},
+			#{historyPageNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE user_info SET 	
+			user_id = #{userId},
+			history_pageno = #{historyPageNo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM user_info
+		WHERE id = #{id}
+	</update>
+	
+
+	<insert id="saveReport">
+		INSERT INTO `system_report`(
+			`uid`,
+			`qid`,
+			`question`,
+			`create_date`,
+			`update_date`
+		)
+		VALUES
+		(
+			#{uid},
+			#{qid},
+			'',
+			CURRENT_TIMESTAMP(),
+			CURRENT_TIMESTAMP()
+		)
+	</insert>
+	
+	<insert id="saveFeedback">
+		INSERT INTO `system_feedback`(
+			`uid`,
+			`mobile`,
+			`content`,
+			`create_date`,
+			`update_date`
+		)
+		VALUES
+		(
+			#{uid},
+			#{mobile},
+			#{content},
+			CURRENT_TIMESTAMP(),
+			CURRENT_TIMESTAMP()
+		)
+	</insert>
+	
+	<select id="getDefaultPageNo" resultType="UserInfo">
+		SELECT
+			CONCAT(GROUP_CONCAT(a.gc), ',')AS "historyPageNo"
+		FROM
+			(SELECT '0' AS gc FROM channels)AS a
+	</select>
+	
+	<select id="getHistoryPageNo" resultType="UserInfo">
+		SELECT 
+			a.history_pageno AS "historyPageNo"
+		FROM user_info a
+		WHERE a.user_id = #{uid}
+	</select>
+	
+	<update id="updateDefaultPageNo">
+		UPDATE user_info SET 	
+			history_pageno = #{historyPageNo}
+		WHERE user_id = #{uid}
+	</update>
+	
+	<insert id="insertDefaultPageNo">
+		INSERT INTO user_info(
+			user_id,
+			history_pageno
+		) VALUES (
+			#{uid},
+			#{historyPageNo}
+		)
+	</insert>
+</mapper>

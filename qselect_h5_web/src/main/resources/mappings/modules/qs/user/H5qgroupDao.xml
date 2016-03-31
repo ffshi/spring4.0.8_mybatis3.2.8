@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innovate.cms.modules.qs.dao.user.H5qgroupDao">
+
+	<resultMap id="H5qgroup" type="com.innovate.cms.modules.qs.entity.user.H5qgroup">  
+        <result property="mysqlid" column="id" />  
+        <result property="questions" column="questions" />  
+        <result property="title" column="title" />  
+        <result property="description" column="description" />  
+    </resultMap>  
+
+
+	
+	
+	<select id="findGroupByGid" resultMap="H5qgroup">
+		  SELECT t.id,t.questions,t.title,t.description FROM h5_qgroup t 
+		  WHERE
+		  t.id=#{id}
+	</select>
+		 
+	
+	
+	
+</mapper>

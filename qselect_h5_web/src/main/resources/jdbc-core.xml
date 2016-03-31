@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd"
+	default-lazy-init="true">
+	
+	
+	<!-- sqlSessionFactory by qselect -->
+	<bean id="sqlSessionFactoryCore" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceCore" />
+		<property name="typeAliasesPackage" value="com.innovate.cms.modules" />
+		<property name="typeAliasesSuperType" value="com.innovate.cms.common.persistence.BaseEntity" />
+		<property name="mapperLocations" value="classpath:/mappings/**/*.xml" />
+		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+	</bean>
+
+	<!-- 扫描basePackage下所有以@MyBatisDao注解的接口 -->
+	<bean id="mapperScannerConfigurerCore" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryCore" />
+		<property name="basePackage" value="com.innovate.cms.modules" />
+		<property name="annotationClass" value="com.innovate.cms.common.persistence.annotation.MyBatisDao" />
+	</bean>
+
+	<!-- Core 定义事务 -->
+	<bean id="transactionManagerCore" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceCore" />
+	</bean>
+	<!-- 配置 Annotation 驱动，扫描@Transactional注解的类定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManagerCore" proxy-target-class="true" />
+	<!-- ================= 事务 end ================= -->
+	<!-- MyBatis end -->
+
+	<!-- 数据源配置, Core 数据库连接池 -->
+	<bean id="dataSourceCore" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<!-- 数据源驱动类可不写，Druid默认会自动根据URL识别DriverClass -->
+		<property name="driverClassName" value="${jdbc.driver}" />
+
+		<!-- 基本属性 url、user、password -->
+		<!-- <property name="url" value="${core.jdbc.url}" /> <property name="username" 
+			value="${core.jdbc.username}" /> <property name="password" value="${core.jdbc.password}" 
+			/> -->
+		<property name="url" value="${test.jdbc.url}" />
+		<property name="username" value="${test.jdbc.username}" />
+		<property name="password" value="${test.jdbc.password}" />
+
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="${jdbc.pool.init}" />
+		<property name="minIdle" value="${jdbc.pool.minIdle}" />
+		<property name="maxActive" value="${jdbc.pool.maxActive}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${jdbc.pool.maxWait}" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${jdbc.pool.timeBetweenEvictionRunsMillis}" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${jdbc.pool.minEvictableIdleTimeMillis}" />
+
+		<property name="validationQuery" value="${jdbc.testSql}" />
+		<property name="testWhileIdle" value="${jdbc.pool.testWhileIdle}" />
+		<property name="testOnBorrow" value="${jdbc.pool.testOnBorrow}" />
+		<property name="testOnReturn" value="${jdbc.pool.testOnReturn}" />
+		<!-- 配置监控统计拦截的filters -->
+		<property name="filters" value="stat" />
+	</bean>
+
+</beans>

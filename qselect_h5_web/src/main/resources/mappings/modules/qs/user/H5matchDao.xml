@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innovate.cms.modules.qs.dao.user.H5matchDao">
+
+	<resultMap id="H5match" type="com.innovate.cms.modules.data.entity.MatchResultToJson">  
+        <result property="fopenidName" column="fopenidName" />  
+        <result property="fopenidPic" column="fopenidPic" />  
+        <result property="matchResult" column="matchResult" />  
+    </resultMap>  
+
+
+	<insert id="saveH5match">
+		INSERT INTO `h5_match`(
+			`gid`,
+			`openid`,
+			`openidName`,
+			`openidPic`,
+			`fopenid`,
+			`fopenidName`,
+			`fopenidPic`,
+			`matchResult`,
+			`matchDescription`,
+			`createTime`
+		)
+		VALUES
+			(
+				#{gid},
+				#{openid},
+				#{openidName},
+				#{openidPic},
+				#{fopenid},
+				#{fopenidName},
+				#{fopenidPic},
+				#{matchResult},
+				#{matchDescription},
+				#{createTime}
+			);
+	</insert>
+	
+	
+	<select id="isMatched" resultType="int">
+		 <![CDATA[ select count(1) from h5_match where gid=#{gid} and openid=#{openid} and fopenid=#{fopenid}]]>
+	</select>
+	
+	<!-- 
+	<select id="findAll" resultMap="H5match">
+		  (SELECT t.fopenidPic,t.fopenidName,t.matchResult FROM h5_match t 
+		  WHERE 
+		  	t.gid=#{gid} and t.openid=#{openid} order by t.matchResult DESC limit 10000)UNION
+		  (SELECT t.fopenidPic,t.fopenidName,t.matchResult FROM h5_match t 
+		  WHERE 
+		  	t.gid=#{gid} and t.fopenid=#{openid} order by t.matchResult DESC limit 10000)		  	 
+	</select>
+	 -->
+	 <select id="findAll" resultMap="H5match">
+		  SELECT
+				ab.fopenidName AS "fopenidName",
+				ab.fopenidPic AS "fopenidPic",
+				MAX(ab.matchResult) AS "matchResult"
+			FROM
+				(
+					(
+						SELECT
+							t.openid AS "openid",
+							t.fopenid AS "fopenid",
+							t.fopenidName AS "fopenidName",
+							t.fopenidPic AS "fopenidPic",
+							t.matchResult AS "matchResult"
+						FROM
+							h5_match t
+						WHERE
+							t.gid = #{gid}
+						AND t.openid = #{openid}
+						ORDER BY
+							t.matchResult DESC
+						LIMIT 100
+					)
+					UNION
+						(
+							SELECT
+								t.fopenid AS "openid",
+								t.openid AS "fopenid",
+								t.openidName AS "fopenidName",
+								t.openidPic AS "fopenidPic",
+								t.matchResult AS "matchResult"
+							FROM
+								h5_match t
+							WHERE
+								t.gid = #{gid}
+							AND t.fopenid = #{openid}
+							ORDER BY
+								t.matchResult DESC
+							LIMIT 100
+						)
+				)ab  GROUP BY ab.fopenid ORDER BY ab.matchResult DESC		  	 
+	</select>
+
+</mapper>

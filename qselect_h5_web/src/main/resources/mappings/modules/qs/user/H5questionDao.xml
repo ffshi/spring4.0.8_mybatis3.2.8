@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innovate.cms.modules.qs.dao.user.H5questionDao">
+
+	<resultMap id="H5question"
+		type="com.innovate.cms.modules.data.entity.GroupQuestionToJson">
+		<result property="qa" column="qa" />
+		<result property="qb" column="qb" />
+		<result property="description" column="description" />
+	</resultMap>
+
+
+
+
+	<select id="findQuestionList" resultMap="H5question">
+
+		SELECT t.qa,t.qb,t.description
+		FROM h5_question t
+		where
+		id in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+
+	</select>
+
+
+
+</mapper>

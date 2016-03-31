@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.innovate.cms.modules.qs.dao.weixin.WeixinUserDao">
+    
+	<sql id="weixinUserColumns">
+		a.id AS "id",
+		a.openid AS "openid",
+		a.nickname AS "nickname",
+		a.sex AS "sex",
+		a.province AS "province",
+		a.city AS "city",
+		a.country AS "country",
+		a.headimgurl AS "headimgurl",
+		a.privilege AS "privilege",
+		a.unionid AS "unionid",
+		a.access_token AS "accessToken",
+		a.refresh_token AS "refreshToken",
+		a.lang AS "lang",
+		a.expires_in AS "expiresIn",
+		a.del_flag AS "delFlag",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<sql id="weixinUserJoins">
+	</sql>
+    
+    
+	<select id="get" resultType="WeixinUser">
+		SELECT 
+			<include refid="weixinUserColumns"/>
+		FROM weixin_user a
+		<include refid="weixinUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByOpenid" resultType="WeixinUser">
+		SELECT 
+			<include refid="weixinUserColumns"/>
+		FROM weixin_user a
+		<include refid="weixinUserJoins"/>
+		WHERE a.openid = #{openid}
+	</select>
+	
+	<select id="findList" resultType="WeixinUser">
+		SELECT 
+			<include refid="weixinUserColumns"/>
+		FROM weixin_user a
+		<include refid="weixinUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="openid != null and openid != ''">
+				AND a.openid = #{openid}
+			</if>
+			<if test="unionid != null and unionid != ''">
+				AND a.unionid = #{unionid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WeixinUser">
+		SELECT 
+			<include refid="weixinUserColumns"/>
+		FROM weixin_user a
+		<include refid="weixinUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO weixin_user(
+			id,
+			openid,
+			nickname,
+			sex,
+			province,
+			city,
+			country,
+			headimgurl,
+			privilege,
+			unionid,
+			access_token,
+			refresh_token,
+			lang,
+			expires_in,
+			del_flag,
+			create_date,
+			update_date,
+			remarks
+		) VALUES (
+			#{id},
+			#{openid},
+			#{nickname},
+			#{sex},
+			#{province},
+			#{city},
+			#{country},
+			#{headimgurl},
+			#{privilege},
+			#{unionid},
+			#{accessToken},
+			#{refreshToken},
+			#{lang},
+			#{expiresIn},
+			#{delFlag},
+			#{createDate},
+			#{updateDate},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE weixin_user SET 	
+			openid = #{openid},
+			nickname = #{nickname},
+			sex = #{sex},
+			province = #{province},
+			city = #{city},
+			country = #{country},
+			headimgurl = #{headimgurl},
+			privilege = #{privilege},
+			unionid = #{unionid},
+			access_token = #{accessToken},
+			refresh_token = #{refreshToken},
+			lang = #{lang},
+			expires_in = #{expiresIn},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE weixin_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
