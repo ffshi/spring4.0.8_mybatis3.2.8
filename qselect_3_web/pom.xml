@@ -670,16 +670,8 @@
 		</plugins>
 	</build>
 	
-	<!-- 开发者信息 -->
-	<developers>  
-		<developer>
-			<id>canxue</id>
-			<name>GaoJi</name>
-			<email>javatome@126.com</email>
-			<roles><role>Project lead</role></roles>
-			<timezone>+8</timezone>
-		</developer>
-	</developers>
+
+
   
 	<description>qselect_3_web</description>
 	<organization>
